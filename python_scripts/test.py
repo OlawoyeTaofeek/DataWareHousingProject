@@ -3,9 +3,9 @@ import pyodbc
 # SQL Server connection using Windows Authentication
 conn = pyodbc.connect(
     "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=localhost;"  # Use your actual server name if needed
+    "SERVER=localhost\\SQLEXPRESS;"  # Double backslashes
     "DATABASE=master;"
-    "Trusted_Connection=yes;"  # Enables Windows Authentication
+    "Trusted_Connection=yes;"
 )
 
 cursor = conn.cursor()
