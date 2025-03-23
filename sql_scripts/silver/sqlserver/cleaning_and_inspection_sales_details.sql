@@ -77,6 +77,48 @@ FROM bronze.crm_sales_details
 WHERE sls_order_dt > sls_ship_dt
       OR sls_order_dt > sls_due_dt;
 
+-- sls_price, sls_quantity_sls_sales
+SELECT
+    sls_sales,
+	sls_quantity,
+	sls_price
+FROM bronze.crm_sales_details
+WHERE sls_sales != sls_price * sls_quantity
+   OR sls_sales is NULL 
+   or sls_quantity is null
+   or sls_price is null
+   or sls_sales <= 0
+   or sls_quantity <= 0
+   or sls_price <= 0
+ORDER BY sls_sales, sls_quantity, sls_price;
+
+SELECT
+    sls_sales as old_sls_sales,
+	sls_quantity,
+	sls_price as old_sls_price,
+	CASE 
+	    WHEN sls_sales != sls_price * ABS(sls_quantity)
+	      OR sls_sales is NULL  OR sls_sales <= 0
+		  THEN sls_quantity * ABS(sls_price)
+		ELSE sls_sales
+	END AS sls_sales,
+	CASE 
+	    WHEN sls_price IS NULL OR sls_price <= 0
+		  THEN sls_sales / NULLIF(sls_quantity, 0)
+	    ELSE sls_price
+	END as sls_price
+FROM bronze.crm_sales_details
+WHERE sls_sales != sls_price * sls_quantity
+   OR sls_sales is NULL 
+   or sls_quantity is null
+   or sls_price is null
+   or sls_sales <= 0
+   or sls_quantity <= 0
+   or sls_price <= 0
+ORDER BY sls_sales, sls_quantity, sls_price;
+
+
+
 -- Code to correct any possible mistake in the crm_sales_details data
 SELECT 
    sls_ord_num,
@@ -106,7 +148,16 @@ SELECT
 	    THEN NULL 
 	  ELSE CAST(CAST(sls_due_dt AS varchar) AS DATE)
    END AS sls_due_dt,
-   sls_sales,
+   CASE 
+	    WHEN sls_sales != sls_price * ABS(sls_quantity)
+	      OR sls_sales is NULL  OR sls_sales <= 0
+		  THEN sls_quantity * ABS(sls_price)
+		ELSE sls_sales
+   END AS sls_sales,
    sls_quantity,
-   sls_price 
+   CASE 
+	    WHEN sls_price IS NULL OR sls_price <= 0
+		  THEN sls_sales / NULLIF(sls_quantity, 0)
+	    ELSE sls_price
+   END as sls_price
 FROM bronze.crm_sales_details;

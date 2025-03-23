@@ -71,4 +71,112 @@ SELECT
 		    THEN 'Male'
 		 ELSE 'Unknown'
 	 END AS gen
-FROM bronze.erp_cust_az12
+FROM bronze.erp_cust_az12;
+
+-- Inspection the erp_loc_a101 table
+SELECT *
+from bronze.erp_loc_a101;
+
+-- There is a relationship between this table and the crm_cust_info
+SELECT cst_key
+FROM silver.crm_cust_info;
+
+SELECT 
+     CASE 
+	    WHEN cid LIKE '%-%' THEN REPLACE(cid, '-', '') 
+	    ELSE cid
+	 END AS cid
+from bronze.erp_loc_a101;
+
+SELECT 
+     CASE 
+	    WHEN cid LIKE '%-%' THEN REPLACE(cid, '-', '') 
+	    ELSE cid
+	 END AS cid
+from bronze.erp_loc_a101
+WHERE 
+     CASE 
+	    WHEN cid LIKE '%-%' THEN REPLACE(cid, '-', '') 
+	    ELSE cid
+	 END NOT IN (
+   SELECT cst_key
+   FROM silver.crm_cust_info
+);
+
+-- Let's inspect the country
+SELECT DISTINCT cntry
+from bronze.erp_loc_a101;
+
+SELECT DISTINCT cntry,
+       CASE 
+	       WHEN TRIM(cntry) in ('USA', 'US') 
+		      THEN 'United States' 
+		   WHEN TRIM(cntry) = 'DE' THEN 'Germany'
+		   WHEN TRIM(cntry) = '' OR cntry IS NULL THEN 'Unknown'
+		   ELSE TRIM(cntry)
+	   END AS cntry
+from bronze.erp_loc_a101;
+
+-- Corrected code
+SELECT 
+     CASE 
+	    WHEN cid LIKE '%-%' THEN REPLACE(cid, '-', '') 
+	    ELSE cid
+	 END AS cid,
+	 CASE 
+	     WHEN TRIM(cntry) in ('USA', 'US') 
+		    THEN 'United States' 
+		 WHEN TRIM(cntry) = 'DE' THEN 'Germany'
+		 WHEN TRIM(cntry) = '' OR cntry IS NULL THEN 'Unknown'
+		 ELSE TRIM(cntry)
+	 END AS cntry
+from bronze.erp_loc_a101;
+
+
+-- Finally the last table bronze.erp_px_cat_g1v2
+SELECT * from bronze.erp_px_cat_g1v2;
+
+-- Check Unwanted spaces
+SELECT * FROM bronze.erp_px_cat_g1v2
+where cat != TRIM(cat) OR subcat != TRIM(subcat)
+    OR maintenance != TRIM(maintenance);
+
+-- Data Standardization and Consistency
+SELECT DISTINCT maintenance 
+from bronze.erp_px_cat_g1v2; 
+
+SELECT DISTINCT cat
+from bronze.erp_px_cat_g1v2; 
+
+SELECT DISTINCT subcat
+from bronze.erp_px_cat_g1v2; 
+
+SELECT 
+      CASE 
+	     WHEN id LIKE '%_%' THEN REPLACE(id, '_', '-')
+		 ELSE id
+	  END AS id
+from bronze.erp_px_cat_g1v2 
+WHERE id NOT IN 
+(select cat_id from silver.crm_prd_info);
+
+select cat_id from silver.crm_prd_info
+where cat_id IN ('CO-PD', 'CO_PD');
+
+select COUNT(DISTINCT cat_id) from silver.crm_prd_info;
+
+SELECT *
+from bronze.erp_px_cat_g1v2
+WHERE id IN ('CO-PD', 'CO_PD');
+
+SELECT 
+      CASE 
+	     WHEN id LIKE '%_%' THEN REPLACE(id, '_', '-')
+		 ELSE id
+	  END AS id,
+	  cat,
+	  subcat,
+	  maintenance
+from bronze.erp_px_cat_g1v2 
+
+select COUNT(DISTINCT id) from bronze.erp_px_cat_g1v2;
