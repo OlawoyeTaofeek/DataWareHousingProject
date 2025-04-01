@@ -51,10 +51,7 @@ INSERT INTO silver.erp_px_cat_g1v2 (
 	maintenance
 )
 SELECT 
-      CASE 
-	     WHEN id LIKE '%_%' THEN REPLACE(id, '_', '-')
-		 ELSE id
-	  END AS id,
+      id
 	  cat,
 	  subcat,
 	  maintenance

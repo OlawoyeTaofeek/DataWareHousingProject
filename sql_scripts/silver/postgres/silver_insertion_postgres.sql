@@ -19,7 +19,7 @@ SELECT
         WHEN UPPER(TRIM(prd_line)) = 'R' THEN 'Road'
         WHEN UPPER(TRIM(prd_line)) = 'S' THEN 'Other Sales'
         WHEN UPPER(TRIM(prd_line)) = 'T' THEN 'Touring'
-        ELSE 'n/a'
+        ELSE 'Unknown'
     END AS prd_line, -- Map product line codes to descriptive values
     prd_start_dt::DATE AS prd_start_dt,
     (LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt) - INTERVAL '1 day')::DATE AS prd_end_dt -- Calculate end date as one day before the next start date
