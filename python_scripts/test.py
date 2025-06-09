@@ -61,10 +61,10 @@ def bulk_import_csv():
                     f"COPY {TABLE_NAME} FROM STDIN WITH CSV HEADER DELIMITER ',' NULL ''", f
                 )
             
-            print(f"✅ Successfully imported {CSV_FILE_PATH} into {TABLE_NAME}")
+            print(f"Successfully imported {CSV_FILE_PATH} into {TABLE_NAME}")
 
     except Exception as e:
-        print(f"⚠️ Error importing CSV: {e}")
+        print(f"Error importing CSV: {e}")
     finally:
         conn.close()
 
@@ -73,5 +73,5 @@ if __name__ == "__main__":
     if os.path.exists(CSV_FILE_PATH):
         bulk_import_csv()
     else:
-        print(f"❌ CSV file not found: {CSV_FILE_PATH}")
+        print(f"CSV file not found: {CSV_FILE_PATH}")
 
